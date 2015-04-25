@@ -31,6 +31,7 @@
 // Our code in other files
 #include "webserver.h"
 #include "sensors.h"
+#include "lcd.h"
 
 
 // Relays
@@ -43,6 +44,10 @@ const char light = 45;
 
 // http://arduino.cc/en/Tutorial/LiquidCrystal
 LiquidCrystal lcd(23, 25, 27, 29, 31, 33); // RS - ENABLE - D4 - D5 - D6 - D7
+enum lcd_mode { INFO, MENU };
+enum lcd_view { BLANK, TEMPERATURE, HUMIDITY };
+lcd_mode LCD_MODE = INFO;
+lcd_view LCD_VIEW = BLANK;
 
 
 // Motors for pH automation
@@ -57,6 +62,7 @@ Webserver webserver = Webserver();
 
 // Timers
 long int sensor_time = 0;
+long int lcd_time = 0;
 
 
 
@@ -105,16 +111,30 @@ void setup() {
 
 void loop() {
 
+    // Refresh temperature and humidity every 5 seconds
+
     if(millis() - sensor_time > 5000){
         measure_temperature();
         measure_humidity();
 
-        Serial.println(get_sensor_values().temperature);
-        lcd.clear();
-        lcd.setCursor(1,0);
-        lcd.print(get_sensor_values().temperature);
+        Serial.print("Temperature: ");
+        Serial.print(get_sensor_values().temperature);
+        Serial.println();
+
+        Serial.print("Humidity: ");
+        Serial.print(get_sensor_values().humidity);
+        Serial.println();
 
         sensor_time = millis();
+    }
+
+    // update lcd
+    if(LCD_MODE == INFO){
+        if(millis() - lcd_time > 3000){
+
+            next_view(&lcd);
+
+        }
     }
 
     webserver.process_request();
