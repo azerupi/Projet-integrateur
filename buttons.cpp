@@ -2,16 +2,18 @@
 
 
 void init_buttons(){
+
     // Initialize Buttons
-    pinMode(button_1; INPUT);
-    pinMode(button_2; INPUT);
-    pinMode(button_3; INPUT);
-    pinMode(button_4; INPUT);
-    pinMode(button_5; INPUT);
-    pinMode(button_6; INPUT);
+    pinMode(button_1, INPUT);
+    pinMode(button_2, INPUT);
+    pinMode(button_3, INPUT);
+    pinMode(button_4, INPUT);
+    pinMode(button_5, INPUT);
+    pinMode(button_6, INPUT);
+
 }
 
-void check_button(char button, void (*callback)){
+void check_button(char button, void (*callback)()){
 
     bool invoke_callback = false;
 

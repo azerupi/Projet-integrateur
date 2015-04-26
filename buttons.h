@@ -1,6 +1,8 @@
 #ifndef _BUTTONS
 #define _BUTTONS
 
+#include "Arduino.h"
+
 // Buttons
 
 const char button_1 = 41; // Most left button
