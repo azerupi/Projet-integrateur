@@ -32,21 +32,13 @@
 #include "webserver.h"
 #include "sensors.h"
 #include "lcd.h"
+#include "buttons.h"
 
 
 // Relays
 
 const char heating = 2;
 const char light = 1;
-
-// Buttons
-
-const char button_1 = 41; // Most left button
-const char button_2 = 43;
-const char button_3 = 45;
-const char button_4 = 47;
-const char button_5 = 49;
-const char button_6 = 51; // Most right button
 
 
 // LCD
@@ -94,24 +86,17 @@ void setup() {
     lcd.setCursor(0,0);
     lcd.print("Initializing...");
 
-    // Initialize temperature-humidity sensor
-    init_sensors();
 
-    // Initialize Buttons
-    pinMode(button_1; INPUT);
-    pinMode(button_2; INPUT);
-    pinMode(button_3; INPUT);
-    pinMode(button_4; INPUT);
-    pinMode(button_5; INPUT);
-    pinMode(button_6; INPUT);
+    init_sensors();
+    init_buttons();
 
     // Initialize relays
     pinMode(heating, OUTPUT);
     pinMode(light, OUTPUT);
 
     // Analog pins do not have to be intitialized...
-    //*/
 
+    // Init webserver
     webserver.begin(&lcd);
 
 }
@@ -140,6 +125,9 @@ void loop() {
 
         }
     }
+
+    // Check button states with function: void check_button(char button, void (*callback));
+    // We have still to determine what the buttons are going to do...
 
     webserver.process_request();
 
