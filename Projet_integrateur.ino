@@ -45,9 +45,7 @@ const char light = 45;
 // http://arduino.cc/en/Tutorial/LiquidCrystal
 LiquidCrystal lcd(23, 25, 27, 29, 31, 33); // RS - ENABLE - D4 - D5 - D6 - D7
 enum lcd_mode { INFO, MENU };
-enum lcd_view { BLANK, TEMPERATURE, HUMIDITY };
 lcd_mode LCD_MODE = INFO;
-lcd_view LCD_VIEW = BLANK;
 
 
 // Motors for pH automation
@@ -86,8 +84,6 @@ void setup() {
     // Print on the lcd
     lcd.setCursor(0,0);
     lcd.print("Initializing...");
-    Serial.println("Initializing...");
-
 
     // Initialize temperature-humidity sensor
     init_sensors();
@@ -102,8 +98,6 @@ void setup() {
 
     webserver.begin(&lcd);
 
-
-
 }
 
 
@@ -117,14 +111,6 @@ void loop() {
         measure_temperature();
         measure_humidity();
 
-        Serial.print("Temperature: ");
-        Serial.print(get_sensor_values().temperature);
-        Serial.println();
-
-        Serial.print("Humidity: ");
-        Serial.print(get_sensor_values().humidity);
-        Serial.println();
-
         sensor_time = millis();
     }
 
@@ -133,6 +119,8 @@ void loop() {
         if(millis() - lcd_time > 3000){
 
             next_view(&lcd);
+
+            lcd_time = millis();
 
         }
     }
