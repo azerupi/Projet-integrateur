@@ -33,13 +33,7 @@
 #include "sensors.h"
 #include "lcd.h"
 #include "buttons.h"
-
-
-// Relays
-
-const char heating = 2;
-const char light = 1;
-
+#include "heating.h"
 
 // LCD
 
@@ -62,6 +56,7 @@ Webserver webserver = Webserver();
 // Timers
 long int sensor_time = 0;
 long int lcd_time = 0;
+long int heating_time = 0;
 
 
 
@@ -79,22 +74,24 @@ void setup() {
 
     Serial.begin(9600);
 
+
     // Initialize LCD screen
     lcd.begin(16, 2); // Rows and columns
+
 
     // Print on the lcd
     lcd.setCursor(0,0);
     lcd.print("Initializing...");
 
 
+
     init_sensors();
     init_buttons();
+    init_heating();
 
-    // Initialize relays
-    pinMode(heating, OUTPUT);
-    pinMode(light, OUTPUT);
 
     // Analog pins do not have to be intitialized...
+
 
     // Init webserver
     webserver.begin(&lcd);
@@ -102,6 +99,15 @@ void setup() {
 }
 
 
+
+
+
+
+/*
+    ##
+    ##      Loop
+    ########################
+*/
 
 
 void loop() {
@@ -115,10 +121,13 @@ void loop() {
         sensor_time = millis();
     }
 
-    // update lcd
-    if(LCD_MODE == INFO){
-        if(millis() - lcd_time > 3000){
 
+
+    // Update lcd
+
+    if(LCD_MODE == INFO){                   // if in INFO mode, cycle trough the views every 3 seconds
+
+        if(millis() - lcd_time > 3000){
             next_view(&lcd);
 
             lcd_time = millis();
@@ -126,9 +135,23 @@ void loop() {
         }
     }
 
+
+
+    // check if temperature is equal to target_temperature
+
+    if(millis() - heating_time > 10000){
+        check_temperature();
+
+        heating_time = millis();
+    }
+
+
     // Check button states with function: void check_button(char button, void (*callback));
     // We have still to determine what the buttons are going to do...
 
+
+
+    // If there is a web request, process it
     webserver.process_request();
 
 }
