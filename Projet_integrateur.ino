@@ -36,8 +36,8 @@
 
 // Relays
 
-const char heating = 47;
-const char light = 45;
+const char heating = 2;
+const char light = 1;
 
 // Buttons
 
@@ -97,6 +97,13 @@ void setup() {
     // Initialize temperature-humidity sensor
     init_sensors();
 
+    // Initialize Buttons
+    pinMode(button_1; INPUT);
+    pinMode(button_2; INPUT);
+    pinMode(button_3; INPUT);
+    pinMode(button_4; INPUT);
+    pinMode(button_5; INPUT);
+    pinMode(button_6; INPUT);
 
     // Initialize relays
     pinMode(heating, OUTPUT);
