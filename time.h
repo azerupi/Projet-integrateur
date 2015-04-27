@@ -5,6 +5,9 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>
+#include <LiquidCrystal.h>
+
+#include "Arduino.h"
 
 extern IPAddress timeServer;
 
@@ -22,9 +25,11 @@ extern unsigned long ntpLastUpdate;    // Keeps track of how long ago we updated
 
 
 
-void init_time();
+int init_time();
 
-bool sync_time();
+void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, char button_ok);
+
+int sync_time();
 
 int getTimeAndDate();
 unsigned long sendNTPpacket(IPAddress& address);

@@ -96,7 +96,11 @@ void setup() {
     // Init webserver
     webserver.begin(&lcd);
 
-    init_time();
+    if( !init_time() ){ // If time didn't sync from the internet, set it manually
+
+        set_time_manually(&lcd, button_1, button_6, button_3);
+
+    }
 
 
 }

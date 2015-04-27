@@ -8,7 +8,7 @@ EthernetUDP Udp;
 byte packetBuffer[NTP_PACKET_SIZE];
 
 
-void init_time(){
+int init_time(){
 
     //Try to get the date and time
     int trys=0;
@@ -16,10 +16,134 @@ void init_time(){
     while(!getTimeAndDate() && trys<10) {
         trys++;
     }
+
+    if(trys == 10){ // date isn't synced
+        return 0;
+    }
+
+    return 1;
+}
+
+void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, char button_ok){
+
+    int hour, minutes, seconds = 0;
+
+    long int blink = millis();
+    long int button_press = 0;
+
+    while(digitalRead(button_ok) == HIGH){
+
+        lcd->clear();
+        lcd->setCursor(0,0);
+        lcd->print("Set Hour:");
+        lcd->setCursor(13,1);
+
+        if(digitalRead(button_left) == LOW && millis() - button_press > 200){
+            button_press = millis();
+            hour--;
+            if(hour < 0){
+                hour = 23;
+            }
+        }
+        else if(digitalRead(button_right) == LOW && millis() - button_press > 200){
+            button_press = millis();
+            hour++;
+            if(hour > 23){
+                hour = 0;
+            }
+        }
+
+        if(millis() - blink > 300){
+            lcd->print(hour);
+        }
+        else if(millis() - blink > 400){
+            blink = millis();
+        }
+    }
+
+    button_press = millis();
+
+    while(digitalRead(button_ok) == HIGH || millis() - button_press < 200){
+
+        lcd->clear();
+        lcd->setCursor(0,0);
+        lcd->print("Set Minutes:");
+        lcd->setCursor(13,1);
+
+        if(digitalRead(button_left) == LOW && millis() - button_press > 200){
+            button_press = millis();
+            minutes--;
+            if(minutes < 0){
+                minutes = 60;
+            }
+        }
+        else if(digitalRead(button_right) == LOW && millis() - button_press > 200){
+            button_press = millis();
+            minutes++;
+            if(minutes > 60){
+                minutes = 0;
+            }
+        }
+
+        if(millis() - blink > 300){
+            lcd->print(minutes);
+        }
+        else if(millis() - blink > 400){
+            blink = millis();
+        }
+
+    }
+
+    button_press = millis();
+
+    while(digitalRead(button_ok) == HIGH || millis() - button_press < 200){
+
+        lcd->clear();
+        lcd->setCursor(0,0);
+        lcd->print("Set Seconds:");
+        lcd->setCursor(13,1);
+
+        if(digitalRead(button_left) == LOW && millis() - button_press > 200){
+            button_press = millis();
+            seconds--;
+            if(seconds < 0){
+                seconds = 60;
+            }
+        }
+        else if(digitalRead(button_right) == LOW && millis() - button_press > 200){
+            button_press = millis();
+            seconds++;
+            if(seconds > 60){
+                seconds = 0;
+            }
+        }
+
+        if(millis() - blink > 300){
+            lcd->print(seconds);
+        }
+        else if(millis() - blink > 400){
+            blink = millis();
+        }
+
+    }
+
+    lcd->clear();
+    lcd->setCursor(0,0);
+    lcd->print("Time is set to:");
+    lcd->setCursor(0,1);
+    lcd->print(hour);
+    lcd->print(":");
+    lcd->print(minutes);
+    lcd->print(":");
+    lcd->print(seconds);
+
+    setTime(hour, minutes, seconds, 1, 1, 2015);
+
+    delay(500);
 }
 
 
-bool sync_time(){
+int sync_time(){
 
     // Update the time via NTP server every X seconds set in ntpSyncTime
     if(now()-ntpLastUpdate > ntpSyncTime) {
@@ -30,10 +154,10 @@ bool sync_time(){
         }
 
         if(trys<10){        // When synced, return true
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 
 }
 
