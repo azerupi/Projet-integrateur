@@ -96,10 +96,17 @@ void setup() {
     // Init webserver
     webserver.begin(&lcd);
 
+    // Sync time with Internet
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print("Syncing time...");
     if( !init_time() ){ // If time didn't sync from the internet, set it manually
-
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("Unable to sync");
+        delay(500);
         set_time_manually(&lcd, button_1, button_6, button_3);
-
     }
 
 
