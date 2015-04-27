@@ -2,7 +2,7 @@
 
 
 
-SensorValues sensor_values = { 50, 6.5, 25, 50};
+SensorValues sensor_values = { NULL, NULL, NULL, NULL};
 DHT temperature_humidity_sensor(53, DHT22);
 
 void init_sensors(){
