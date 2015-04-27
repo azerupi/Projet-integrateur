@@ -26,7 +26,7 @@
 #include <SPI.h>
 #include <LiquidCrystal.h>
 #include <DHT.h>
-
+#include <Time.h>
 
 // Our code in other files
 #include "webserver.h"
@@ -34,6 +34,7 @@
 #include "lcd.h"
 #include "buttons.h"
 #include "heating.h"
+#include "time.h"
 
 // LCD
 
@@ -92,9 +93,11 @@ void setup() {
 
     // Analog pins do not have to be intitialized...
 
-
     // Init webserver
     webserver.begin(&lcd);
+
+    init_time();
+
 
 }
 
@@ -150,6 +153,8 @@ void loop() {
     // We have still to determine what the buttons are going to do...
 
 
+    // Try to sync time with ntp server
+    sync_time();
 
     // If there is a web request, process it
     webserver.process_request();
