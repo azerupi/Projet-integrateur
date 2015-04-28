@@ -13,11 +13,11 @@ int init_time(){
     //Try to get the date and time
     int trys=0;
 
-    while(!getTimeAndDate() && trys<10) {
+    while(!getTimeAndDate() && trys<3) {
         trys++;
     }
 
-    if(trys == 10){ // date isn't synced
+    if(trys == 3){ // date isn't synced
         return 0;
     }
 
@@ -28,102 +28,114 @@ void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, 
 
     int hour, minutes, seconds = 0;
 
-    long int blink = millis();
     long int button_press = 0;
 
-    while(digitalRead(button_ok) == HIGH){
+    while(digitalRead(button_ok) == LOW){
 
-        lcd->clear();
-        lcd->setCursor(0,0);
-        lcd->print("Set Hour:");
-        lcd->setCursor(13,1);
+        bool hours_changed = true;
 
-        if(digitalRead(button_left) == LOW && millis() - button_press > 200){
+        if(digitalRead(button_left) == HIGH && millis() - button_press > 200){
             button_press = millis();
             hour--;
-            if(hour < 0){
-                hour = 23;
-            }
+            hours_changed = true;
         }
-        else if(digitalRead(button_right) == LOW && millis() - button_press > 200){
+        else if(digitalRead(button_right) == HIGH && millis() - button_press > 200){
             button_press = millis();
             hour++;
-            if(hour > 23){
-                hour = 0;
-            }
+            hours_changed = true;
         }
 
-        if(millis() - blink > 300){
+        if(hour > 23){
+            hour = 0;
+        }
+        else if(hour < 0){
+            hour = 23;
+        }
+
+        if(hours_changed){
+            lcd->clear();
+            lcd->setCursor(0,0);
+            lcd->print("Set Hour:");
+            lcd->setCursor(13,1);
             lcd->print(hour);
+            hours_changed = false;
         }
-        else if(millis() - blink > 400){
-            blink = millis();
-        }
+
+        delay(50);
     }
 
     button_press = millis();
 
-    while(digitalRead(button_ok) == HIGH || millis() - button_press < 200){
+    while(digitalRead(button_ok) == LOW || millis() - button_press < 500){
 
-        lcd->clear();
-        lcd->setCursor(0,0);
-        lcd->print("Set Minutes:");
-        lcd->setCursor(13,1);
+        bool minutes_changed = true;
 
-        if(digitalRead(button_left) == LOW && millis() - button_press > 200){
+        if(digitalRead(button_left) == HIGH && millis() - button_press > 200){
             button_press = millis();
             minutes--;
-            if(minutes < 0){
-                minutes = 60;
-            }
+            minutes_changed = true;
         }
-        else if(digitalRead(button_right) == LOW && millis() - button_press > 200){
+        else if(digitalRead(button_right) == HIGH && millis() - button_press > 200){
             button_press = millis();
             minutes++;
-            if(minutes > 60){
-                minutes = 0;
-            }
+            minutes_changed = true;
         }
 
-        if(millis() - blink > 300){
+        if(minutes < 0){
+            minutes = 59;
+        }
+        else if(minutes > 59){
+            minutes = 0;
+        }
+
+        if(minutes_changed){
+            lcd->clear();
+            lcd->setCursor(0,0);
+            lcd->print("Set Minutes:");
+            lcd->setCursor(13,1);
             lcd->print(minutes);
+            minutes_changed = false;
         }
-        else if(millis() - blink > 400){
-            blink = millis();
-        }
+
+        delay(50);
 
     }
 
     button_press = millis();
 
-    while(digitalRead(button_ok) == HIGH || millis() - button_press < 200){
+    while(digitalRead(button_ok) == LOW  || millis() - button_press < 500){
 
-        lcd->clear();
-        lcd->setCursor(0,0);
-        lcd->print("Set Seconds:");
-        lcd->setCursor(13,1);
+        bool seconds_changed = true;
 
-        if(digitalRead(button_left) == LOW && millis() - button_press > 200){
+        if(digitalRead(button_left) == HIGH && millis() - button_press > 200){
             button_press = millis();
             seconds--;
-            if(seconds < 0){
-                seconds = 60;
-            }
+            seconds_changed = true;
         }
-        else if(digitalRead(button_right) == LOW && millis() - button_press > 200){
+        else if(digitalRead(button_right) == HIGH && millis() - button_press > 200){
             button_press = millis();
             seconds++;
-            if(seconds > 60){
-                seconds = 0;
-            }
+            seconds_changed = true;
         }
 
-        if(millis() - blink > 300){
+        if(seconds < 0){
+            seconds = 59;
+        }
+        else if(seconds > 59){
+            seconds = 0;
+        }
+
+        if(seconds_changed){
+            lcd->clear();
+            lcd->setCursor(0,0);
+            lcd->print("Set Seconds:");
+            lcd->setCursor(13,1);
             lcd->print(seconds);
+            seconds_changed = false;
         }
-        else if(millis() - blink > 400){
-            blink = millis();
-        }
+
+
+        delay(50);
 
     }
 
@@ -139,7 +151,7 @@ void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, 
 
     setTime(hour, minutes, seconds, 1, 1, 2015);
 
-    delay(500);
+    delay(2000);
 }
 
 
@@ -149,11 +161,11 @@ int sync_time(){
     if(now()-ntpLastUpdate > ntpSyncTime) {
 
         int trys=0;
-        while(!getTimeAndDate() && trys<10){
+        while(!getTimeAndDate() && trys<3){
             trys++;
         }
 
-        if(trys<10){        // When synced, return true
+        if(trys<3){        // When synced, return true
             return 1;
         }
     }

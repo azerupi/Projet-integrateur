@@ -106,7 +106,7 @@ void setup() {
         lcd.setCursor(0,0);
         lcd.print("Unable to sync");
         delay(500);
-        set_time_manually(&lcd, button_1, button_6, button_3);
+        set_time_manually(&lcd, button_1, button_2, button_3);
     }
 
 
