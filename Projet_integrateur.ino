@@ -87,7 +87,7 @@ void setup() {
 
 
     init_sensors();
-    init_buttons();
+    init_buttons(&lcd);
     init_heating();
 
 
