@@ -6,6 +6,9 @@ Light_mode light_mode = AUTO;
 long int auto_time = 0;
 
 
+Time wake_time = {6,0,0};   // 6:00 am
+Time sleep_time = {22,0,0}; // 10:00 pm
+
 
 void init_light(){
     pinMode(light, OUTPUT);
@@ -31,7 +34,7 @@ void light_cycle(){
     if(millis() - auto_time > 60000){
 
         Time now = get_time_now();
-        if(now.hour < 6 || now.hour >= 22){
+        if( (now.hour < wake_time.hour && now.minutes < wake_time.minutes) || (now.hour >= sleep_time.hour && now.minutes >= sleep_time.minutes)){
             digitalWrite(light, LOW);
         }
         else{

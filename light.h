@@ -16,6 +16,9 @@ const char light = 2; // Change when wired on Arduino
 extern Light_mode light_mode;
 extern long int auto_time;
 
+extern Time wake_time;
+extern Time sleep_time;
+
 
 void init_light();
 void light_cycle();
