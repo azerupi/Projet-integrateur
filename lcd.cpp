@@ -3,8 +3,6 @@
 LiquidCrystal lcd(23, 25, 27, 29, 31, 33); // RS - ENABLE - D4 - D5 - D6
 lcd_view current_view = BLANK;
 
-lcd_mode LCD_MODE = INFO;
-
 
 void init_lcd(){
     // Initialize LCD screen
@@ -42,6 +40,16 @@ void show_view(lcd_view view){
                 lcd.print("%");
                 break;
 
+            case TIME:
+                {
+                    lcd.print("Time:");
+                    lcd.setCursor(7,1);
+                    String time_string = (get_time_now().hour < 10) ?  "0" : "" + get_time_now().hour + ':' + (get_time_now().minutes < 10) ? "0" : "" + get_time_now().minutes + ':' + (get_time_now().seconds < 10) ? "0" : "" + get_time_now().seconds;
+
+                    lcd.print(time_string);
+                }
+                break;
+
             default:
                 break;
     }
@@ -57,6 +65,10 @@ void next_view(){
     switch(current_view){
         case TEMPERATURE:
             next_view = HUMIDITY;
+            break;
+
+        case HUMIDITY:
+            next_view = TIME;
             break;
 
         // Don't include last view -> default will be selected and view will go back to first

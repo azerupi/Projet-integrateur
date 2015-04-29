@@ -92,7 +92,7 @@ void setup() {
         get_lcd()->setCursor(0,0);
         get_lcd()->print("Unable to sync");
         delay(500);
-        set_time_manually(button_1, button_2, button_3);
+        set_time_manually( button_1, button_2, button_3);
     }
 
 
