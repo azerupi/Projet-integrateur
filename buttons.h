@@ -16,7 +16,7 @@ const char button_6 = 51; // Most right button
 
 void init_buttons(LiquidCrystal *lcd);
 
-void check_button(char button, void (*callback));
+int check_button(char button, void (*callback)());
 
 
 #endif

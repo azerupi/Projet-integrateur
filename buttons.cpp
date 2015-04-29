@@ -67,7 +67,7 @@ void init_buttons(LiquidCrystal *lcd){
 
 }
 
-void check_button(char button, void (*callback)()){
+int check_button(char button, void (*callback)() ){
 
     bool invoke_callback = false;
 
@@ -77,11 +77,13 @@ void check_button(char button, void (*callback)()){
 
     // This prevents the callback to be invoked repeatedly when the button is pressed
     int time_pressed = millis();
-    while(digitalRead(button) == HIGH && millis() - time_pressed < 500){
 
-        // Do nothing until the button is released or 500 ms have passed
+    if(invoke_callback){
+        callback();
+        while(digitalRead(button) == HIGH && millis() - time_pressed < 200){
+            // Do nothing until the button is released or 500 ms have passed
+        }
+        return 1;
     }
-
-    callback();
-
+    return 0;
 }

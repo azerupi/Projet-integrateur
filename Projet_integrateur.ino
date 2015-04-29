@@ -37,13 +37,6 @@
 #include "time.h"
 #include "light.h"
 
-// LCD
-
-// http://arduino.cc/en/Tutorial/LiquidCrystal
-LiquidCrystal lcd(23, 25, 27, 29, 31, 33); // RS - ENABLE - D4 - D5 - D6 - D7
-enum lcd_mode { INFO, MENU };
-lcd_mode LCD_MODE = INFO;
-
 
 // Motors for pH automation
 //*/
@@ -77,16 +70,7 @@ void setup() {
     Serial.begin(9600);
 
 
-    // Initialize LCD screen
-    lcd.begin(16, 2); // Rows and columns
-
-
-    // Print on the lcd
-    lcd.setCursor(0,0);
-    lcd.print("Initializing...");
-
-
-
+    init_lcd();
     init_sensors();
     init_buttons(&lcd);
     init_heating();
@@ -96,17 +80,17 @@ void setup() {
     // Analog pins do not have to be intitialized...
 
     // Init webserver
-    webserver.begin(&lcd);
+    //webserver.begin(get_lcd());
 
     // Sync time with Internet
 
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Syncing time...");
-    if( !init_time() ){ // If time didn't sync from the internet, set it manually
-        lcd.clear();
-        lcd.setCursor(0,0);
-        lcd.print("Unable to sync");
+    get_lcd()->clear();
+    get_lcd()->setCursor(0,0);
+    get_lcd()->print("Syncing time...");
+    if( true /*!init_time()*/ ){ // If time didn't sync from the internet, set it manually
+        get_lcd()->clear();
+        get_lcd()->setCursor(0,0);
+        get_lcd()->print("Unable to sync");
         delay(500);
         set_time_manually(&lcd, button_1, button_2, button_3);
     }
@@ -141,14 +125,12 @@ void loop() {
 
     // Update lcd
 
-    if(LCD_MODE == INFO){                   // if in INFO mode, cycle trough the views every 3 seconds
 
-        if(millis() - lcd_time > 3000){
-            next_view(&lcd);
+    if(millis() - lcd_time > 3000){
+        next_view();
 
-            lcd_time = millis();
+        lcd_time = millis();
 
-        }
     }
 
 
@@ -162,8 +144,14 @@ void loop() {
     }
 
 
-    // Check button states with function: void check_button(char button, void (*callback));
-    // We have still to determine what the buttons are going to do...
+    // Check button states with function: void check_button(char button, void (*callback)());
+
+    if( check_button(button_1, change_temperature_target) ||
+        check_button(button_2, change_light_mode) ){
+
+            next_view();
+            lcd_time = millis();
+    }
 
 
 
@@ -171,9 +159,9 @@ void loop() {
     light_cycle();
 
     // Try to sync time with ntp server
-    sync_time();
+    //sync_time();
 
     // If there is a web request, process it
-    webserver.process_request();
+    //webserver.process_request();
 
 }

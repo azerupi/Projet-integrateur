@@ -1,26 +1,45 @@
 #include "lcd.h"
 
+LiquidCrystal lcd(23, 25, 27, 29, 31, 33); // RS - ENABLE - D4 - D5 - D6
 lcd_view current_view = BLANK;
 
-void show_view(LiquidCrystal *lcd, lcd_view view){
+lcd_mode LCD_MODE = INFO;
 
-    lcd->clear();
-    lcd->setCursor(0,0);
+
+void init_lcd(){
+    // Initialize LCD screen
+    lcd.begin(16, 2); // Rows and columns
+
+
+    // Print on the lcd
+    lcd.setCursor(0,0);
+    lcd.print("Initializing...");
+
+}
+
+LiquidCrystal* get_lcd(){
+    return &lcd;
+}
+
+void show_view(lcd_view view){
+
+    lcd.clear();
+    lcd.setCursor(0,0);
 
     switch(view){
             case TEMPERATURE:
-                lcd->print("Temperature:");
-                lcd->setCursor(9,1);
-                lcd->print(get_sensor_values().temperature);
-                lcd->print((char)223);
-                lcd->print("C");
+                lcd.print("Temperature:");
+                lcd.setCursor(9,1);
+                lcd.print(get_sensor_values().temperature);
+                lcd.print((char)223);
+                lcd.print("C");
                 break;
 
             case HUMIDITY:
-                lcd->print("Humidity:");
-                lcd->setCursor(10,1);
-                lcd->print(get_sensor_values().humidity);
-                lcd->print("%");
+                lcd.print("Humidity:");
+                lcd.setCursor(10,1);
+                lcd.print(get_sensor_values().humidity);
+                lcd.print("%");
                 break;
 
             default:
@@ -31,7 +50,7 @@ void show_view(LiquidCrystal *lcd, lcd_view view){
 }
 
 
-void next_view(LiquidCrystal *lcd){
+void next_view(){
 
     lcd_view next_view;
 
@@ -47,6 +66,6 @@ void next_view(LiquidCrystal *lcd){
             break;
     }
 
-    show_view(lcd, next_view);
+    show_view(next_view);
 
 }
