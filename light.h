@@ -12,7 +12,7 @@ enum Light_mode{
 };
 
 
-const char light = 2; // Change when wired on Arduino
+const char light = 39; 
 extern Light_mode light_mode;
 extern long int auto_time;
 

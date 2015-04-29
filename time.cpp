@@ -25,6 +25,9 @@ int init_time(){
     return 1;
 }
 
+
+
+
 void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, char button_ok){
 
     int hour, minutes, seconds = 0;

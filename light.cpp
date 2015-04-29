@@ -11,8 +11,11 @@ Time sleep_time = {22,0,0}; // 10:00 pm
 
 
 void init_light(){
+
     pinMode(light, OUTPUT);
+
     digitalWrite(light, LOW);
+
 }
 
 
@@ -34,12 +37,23 @@ void light_cycle(){
     if(millis() - auto_time > 60000){
 
         Time now = get_time_now();
-        if( (now.hour < wake_time.hour && now.minutes < wake_time.minutes) || (now.hour >= sleep_time.hour && now.minutes >= sleep_time.minutes)){
-            digitalWrite(light, LOW);
+
+        bool on = true;
+
+        if(now.hour <= wake_time.hour){
+            on = false;
+            if(now.hour == wake_time.hour && now.minutes >= wake_time.minutes){
+                on = true;
+            }
         }
-        else{
-            digitalWrite(light, HIGH);
+        else if(now.hour >= sleep_time.hour){
+            on = false;
+            if(now.hour == sleep_time.hour && now.minutes < sleep_time.minutes){
+                on = true;
+            }
         }
+
+        digitalWrite(light, on? HIGH : LOW);
 
         auto_time = millis();
     }
