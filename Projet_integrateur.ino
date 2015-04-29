@@ -35,6 +35,7 @@
 #include "buttons.h"
 #include "heating.h"
 #include "time.h"
+#include "light.h"
 
 // LCD
 
@@ -89,6 +90,7 @@ void setup() {
     init_sensors();
     init_buttons(&lcd);
     init_heating();
+    init_light();
 
 
     // Analog pins do not have to be intitialized...
@@ -163,6 +165,10 @@ void loop() {
     // Check button states with function: void check_button(char button, void (*callback));
     // We have still to determine what the buttons are going to do...
 
+
+
+    // Light cycle
+    light_cycle();
 
     // Try to sync time with ntp server
     sync_time();

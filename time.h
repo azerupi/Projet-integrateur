@@ -9,6 +9,14 @@
 
 #include "Arduino.h"
 
+struct Time{
+    int hour;
+    int minutes;
+    int seconds;
+};
+
+extern Time time_now;
+
 extern IPAddress timeServer;
 
 const int timeZoneOffset = 7200;        // Time-zone GMT +2
@@ -28,6 +36,8 @@ extern unsigned long ntpLastUpdate;    // Keeps track of how long ago we updated
 int init_time();
 
 void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, char button_ok);
+
+Time get_time_now();
 
 int sync_time();
 

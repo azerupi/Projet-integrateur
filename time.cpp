@@ -1,5 +1,6 @@
 #include "time.h"
 
+Time time_now;
 
 IPAddress timeServer(195,220,94,163);   // IP adress for the ntp-server
 unsigned long ntpLastUpdate = 0;
@@ -162,6 +163,22 @@ void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, 
 
     delay(2000);
 }
+
+
+
+
+
+
+Time get_time_now(){
+    time_now.hour = hour();
+    time_now.minutes = minute();
+    time_now.seconds = second();
+
+    return time_now;
+}
+
+
+
 
 
 int sync_time(){
