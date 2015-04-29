@@ -92,7 +92,7 @@ void setup() {
         get_lcd()->setCursor(0,0);
         get_lcd()->print("Unable to sync");
         delay(500);
-        set_time_manually(&lcd, button_1, button_2, button_3);
+        set_time_manually(button_1, button_2, button_3);
     }
 
 
@@ -117,29 +117,22 @@ void loop() {
     if(millis() - sensor_time > 5000){
         measure_temperature();
         measure_humidity();
-
         sensor_time = millis();
     }
 
 
-
     // Update lcd
-
 
     if(millis() - lcd_time > 3000){
         next_view();
-
         lcd_time = millis();
-
     }
-
 
 
     // check if temperature is equal to target_temperature
 
     if(millis() - heating_time > 10000){
         check_temperature();
-
         heating_time = millis();
     }
 
@@ -154,12 +147,14 @@ void loop() {
     }
 
 
-
     // Light cycle
     light_cycle();
 
+
     // Try to sync time with ntp server
+    //Serial.println("Sync passed in loop");
     //sync_time();
+
 
     // If there is a web request, process it
     //webserver.process_request();

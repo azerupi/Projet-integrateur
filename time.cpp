@@ -28,11 +28,13 @@ int init_time(){
 
 
 
-void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, char button_ok){
+void set_time_manually(char button_left, char button_right, char button_ok){
 
     int hour, minutes, seconds = 0;
 
     long int button_press = 0;
+
+    LiquidCrystal *lcd = get_lcd();
 
     while(digitalRead(button_ok) == LOW){
 
@@ -187,17 +189,24 @@ Time get_time_now(){
 int sync_time(){
 
     // Update the time via NTP server every X seconds set in ntpSyncTime
-    if(now()-ntpLastUpdate > ntpSyncTime) {
+    if(now() - ntpLastUpdate > ntpSyncTime) {
+
+        get_lcd()->clear();
+        get_lcd()->setCursor(0,0);
+        get_lcd()->print("Syncing time...");
 
         int trys=0;
-        while(!getTimeAndDate() && trys<3){
+        while(!getTimeAndDate() && trys < 3){
             trys++;
         }
 
-        if(trys<3){        // When synced, return true
+        if(trys < 3){        // When synced, return true
             return 1;
         }
+
+        ntpLastUpdate = now();
     }
+
     return 0;
 
 }
