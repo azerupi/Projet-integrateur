@@ -57,6 +57,9 @@ void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, 
             lcd->setCursor(0,0);
             lcd->print("Set Hour:");
             lcd->setCursor(13,1);
+            if(hour < 10){
+                lcd->print("0");
+            }
             lcd->print(hour);
             hours_changed = false;
         }
@@ -93,6 +96,9 @@ void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, 
             lcd->setCursor(0,0);
             lcd->print("Set Minutes:");
             lcd->setCursor(13,1);
+            if(minutes < 10){
+                lcd->print("0");
+            }
             lcd->print(minutes);
             minutes_changed = false;
         }
@@ -130,6 +136,9 @@ void set_time_manually(LiquidCrystal *lcd, char button_left, char button_right, 
             lcd->setCursor(0,0);
             lcd->print("Set Seconds:");
             lcd->setCursor(13,1);
+            if(seconds < 10){
+                lcd->print("0");
+            }
             lcd->print(seconds);
             seconds_changed = false;
         }
