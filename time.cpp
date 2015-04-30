@@ -32,15 +32,17 @@ int init_time(){
 
 void set_time_manually(){
 
-    int hour, minutes, seconds = 0;
+    int hour, minutes, seconds;
 
     long int button_press = 0;
 
     LiquidCrystal *lcd = get_lcd();
 
-    while(digitalRead(button_3) == LOW){
 
-        bool hours_changed = true;
+    hour = (get_time_now().hour)? get_time_now().hour : 0;
+    bool hours_changed = true;
+
+    while(digitalRead(button_3) == LOW){
 
         if(digitalRead(button_1) == HIGH && millis() - button_press > 200){
             button_press = millis();
@@ -77,9 +79,10 @@ void set_time_manually(){
 
     button_press = millis();
 
-    while(digitalRead(button_3) == LOW || millis() - button_press < 500){
+    minutes = (get_time_now().minutes)? get_time_now().minutes : 0;
+    bool minutes_changed = true;
 
-        bool minutes_changed = true;
+    while(digitalRead(button_3) == LOW || millis() - button_press < 500){
 
         if(digitalRead(button_1) == HIGH && millis() - button_press > 200){
             button_press = millis();
@@ -117,9 +120,11 @@ void set_time_manually(){
 
     button_press = millis();
 
+    seconds = (get_time_now().seconds)? get_time_now().seconds : 0;
+    bool seconds_changed = true;
+
     while(digitalRead(button_3) == LOW  || millis() - button_press < 500){
 
-        bool seconds_changed = true;
 
         if(digitalRead(button_1) == HIGH && millis() - button_press > 200){
             button_press = millis();
@@ -159,12 +164,10 @@ void set_time_manually(){
     lcd->clear();
     lcd->setCursor(0,0);
     lcd->print("Time is set to:");
-    lcd->setCursor(0,1);
-    lcd->print(hour);
-    lcd->print(":");
-    lcd->print(minutes);
-    lcd->print(":");
-    lcd->print(seconds);
+    String time_string = (hour<10? "0" : "") + String(hour) + ":" +  (minutes<10? "0" : "") + String(minutes) + ":" +  (seconds<10? "0" : "") + String(seconds);
+    lcd->setCursor(16 - time_string.length(),1);
+    lcd->print(time_string);
+
 
     setTime(hour, minutes, seconds, 1, 1, 2015);
 
