@@ -22,6 +22,7 @@ int init_time(){
         return 0;
     }
 
+    ntpLastUpdate = now();
     return 1;
 }
 

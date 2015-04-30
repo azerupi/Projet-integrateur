@@ -9,6 +9,7 @@ const char heating = 0; // Has to change to the correct pin when we wire it
 
 extern char target_temperature;
 extern bool heating_active;
+extern long int heating_time;
 
 void init_heating();
 
