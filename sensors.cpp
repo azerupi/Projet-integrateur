@@ -2,11 +2,13 @@
 
 
 
-SensorValues sensor_values = { NULL, NULL, NULL, NULL};
+SensorValues sensor_values = { NULL, NULL, NULL, NULL, NULL};
 DHT temperature_humidity_sensor(53, DHT22);
 
 void init_sensors(){
-
+    measure_temperature();
+    measure_humidity();
+    measure_pH();
 }
 
 SensorValues get_sensor_values(){
@@ -14,6 +16,12 @@ SensorValues get_sensor_values(){
 }
 
 void measure_pH(){
+
+    // Code
+
+    // Update measure time
+
+    sensor_values.last_ph_update = get_time_now();
 
 }
 

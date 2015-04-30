@@ -8,7 +8,6 @@
 #include <LiquidCrystal.h>
 
 #include "Arduino.h"
-#include "lcd.h"
 
 struct Time{
     int hour;

@@ -50,6 +50,17 @@ void show_view(lcd_view view){
                 }
                 break;
 
+            case PH:
+                lcd.print("pH:");
+                lcd.setCursor(13,1);
+                lcd.print(get_sensor_values().pH);
+                break;
+
+            case LAST_PH_UPDATE:
+                lcd.print("Last pH measure:");
+                lcd.setCursor(7,1);
+                lcd.print( (get_sensor_values().last_ph_update.hour < 10) ?  "0" : "" + get_sensor_values().last_ph_update.hour + ':' + (get_sensor_values().last_ph_update.minutes < 10) ? "0" : "" + get_sensor_values().last_ph_update.minutes + ':' + (get_sensor_values().last_ph_update.seconds < 10) ? "0" : "" + get_sensor_values().last_ph_update.seconds );
+
             default:
                 break;
     }
@@ -69,6 +80,14 @@ void next_view(){
 
         case HUMIDITY:
             next_view = TIME;
+            break;
+
+        case TIME:
+            next_view = PH;
+            break;
+
+        case PH:
+            next_view = LAST_PH_UPDATE;
             break;
 
         // Don't include last view -> default will be selected and view will go back to first

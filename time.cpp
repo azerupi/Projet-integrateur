@@ -1,4 +1,5 @@
 #include "time.h"
+#include "lcd.h"
 
 Time time_now;
 

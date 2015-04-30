@@ -2,12 +2,14 @@
 #define _SENSORS
 
 #include <DHT.h>
+#include "time.h"
 
 struct SensorValues{
     float luminosity;
     float pH;
     float temperature;
     float humidity;
+    Time last_ph_update;
 };
 
 // Sensor pins

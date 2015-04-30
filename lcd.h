@@ -4,14 +4,14 @@
 #include <LiquidCrystal.h>
 
 // To have access to saved sensor readings
-#include "sensors.h"
 #include "time.h"
+#include "sensors.h"
 
 
 // http://arduino.cc/en/Tutorial/LiquidCrystal
 extern LiquidCrystal lcd;
 
-enum lcd_view { BLANK, TEMPERATURE, HUMIDITY, PH, TIME };
+enum lcd_view { BLANK, TEMPERATURE, HUMIDITY, PH, LAST_PH_UPDATE, TIME };
 extern lcd_view current_view;
 
 void init_lcd();
