@@ -8,6 +8,7 @@
 #include <LiquidCrystal.h>
 
 #include "Arduino.h"
+#include "buttons.h"
 
 struct Time{
     int hour;
@@ -35,7 +36,7 @@ extern unsigned long ntpLastUpdate;    // Keeps track of how long ago we updated
 
 int init_time();
 
-void set_time_manually(char button_left, char button_right, char button_ok);
+void set_time_manually();
 
 Time get_time_now();
 

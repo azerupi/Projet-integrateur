@@ -86,7 +86,7 @@ void setup() {
         get_lcd()->setCursor(0,0);
         get_lcd()->print("Unable to sync");
         delay(500);
-        set_time_manually( button_1, button_2, button_3);
+        set_time_manually();
     }
 
     init_sensors(); // Init sensors after time (because pH depends on it)
@@ -138,10 +138,20 @@ void loop() {
 
     if( check_button(button_1, change_temperature_target) ||
         check_button(button_2, change_light_mode) ||
-        check_button(button_3, pH_menu) ){
+        check_button(button_3, pH_menu) ||
+        check_button(button_4, set_time_manually) ||
+        check_button(button_5, webserver_reconnect ) ){
 
             next_view();
             lcd_time = millis();
+    }
+
+    if( check_button(button_6, next_view)){
+        long int time_pressed = millis();
+        while(digitalRead(button_6) == HIGH && millis() - time_pressed < 500){
+
+        }
+        lcd_time = millis();
     }
 
 
@@ -157,4 +167,12 @@ void loop() {
     // If there is a web request, process it
     //webserver.process_request();
 
+}
+
+
+
+
+
+void webserver_reconnect(){
+    webserver.begin(get_lcd());
 }

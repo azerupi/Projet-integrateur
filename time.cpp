@@ -30,7 +30,7 @@ int init_time(){
 
 
 
-void set_time_manually(char button_left, char button_right, char button_ok){
+void set_time_manually(){
 
     int hour, minutes, seconds = 0;
 
@@ -38,16 +38,16 @@ void set_time_manually(char button_left, char button_right, char button_ok){
 
     LiquidCrystal *lcd = get_lcd();
 
-    while(digitalRead(button_ok) == LOW){
+    while(digitalRead(button_3) == LOW){
 
         bool hours_changed = true;
 
-        if(digitalRead(button_left) == HIGH && millis() - button_press > 200){
+        if(digitalRead(button_1) == HIGH && millis() - button_press > 200){
             button_press = millis();
             hour--;
             hours_changed = true;
         }
-        else if(digitalRead(button_right) == HIGH && millis() - button_press > 200){
+        else if(digitalRead(button_2) == HIGH && millis() - button_press > 200){
             button_press = millis();
             hour++;
             hours_changed = true;
@@ -77,16 +77,16 @@ void set_time_manually(char button_left, char button_right, char button_ok){
 
     button_press = millis();
 
-    while(digitalRead(button_ok) == LOW || millis() - button_press < 500){
+    while(digitalRead(button_3) == LOW || millis() - button_press < 500){
 
         bool minutes_changed = true;
 
-        if(digitalRead(button_left) == HIGH && millis() - button_press > 200){
+        if(digitalRead(button_1) == HIGH && millis() - button_press > 200){
             button_press = millis();
             minutes--;
             minutes_changed = true;
         }
-        else if(digitalRead(button_right) == HIGH && millis() - button_press > 200){
+        else if(digitalRead(button_2) == HIGH && millis() - button_press > 200){
             button_press = millis();
             minutes++;
             minutes_changed = true;
@@ -117,16 +117,16 @@ void set_time_manually(char button_left, char button_right, char button_ok){
 
     button_press = millis();
 
-    while(digitalRead(button_ok) == LOW  || millis() - button_press < 500){
+    while(digitalRead(button_3) == LOW  || millis() - button_press < 500){
 
         bool seconds_changed = true;
 
-        if(digitalRead(button_left) == HIGH && millis() - button_press > 200){
+        if(digitalRead(button_1) == HIGH && millis() - button_press > 200){
             button_press = millis();
             seconds--;
             seconds_changed = true;
         }
-        else if(digitalRead(button_right) == HIGH && millis() - button_press > 200){
+        else if(digitalRead(button_2) == HIGH && millis() - button_press > 200){
             button_press = millis();
             seconds++;
             seconds_changed = true;
