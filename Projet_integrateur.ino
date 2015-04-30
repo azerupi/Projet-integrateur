@@ -29,11 +29,11 @@
 #include <Time.h>
 
 // Our code in other files
-#include "webserver.h"
+#include "buttons.h"
 #include "sensors.h"
 #include "lcd.h"
-#include "buttons.h"
 #include "heating.h"
+#include "webserver.h"
 #include "time.h"
 #include "light.h"
 
@@ -69,15 +69,9 @@ void setup() {
 
     Serial.begin(9600);
 
-
     init_lcd();
-    init_sensors();
     init_buttons(&lcd);
-    init_heating();
-    init_light();
 
-
-    // Analog pins do not have to be intitialized...
 
     // Init webserver
     //webserver.begin(get_lcd());
@@ -95,6 +89,9 @@ void setup() {
         set_time_manually( button_1, button_2, button_3);
     }
 
+    init_sensors(); // Init sensors after time (because pH depends on it)
+    init_light();
+    init_heating();
 
 }
 
@@ -140,7 +137,8 @@ void loop() {
     // Check button states with function: void check_button(char button, void (*callback)());
 
     if( check_button(button_1, change_temperature_target) ||
-        check_button(button_2, change_light_mode) ){
+        check_button(button_2, change_light_mode) ||
+        check_button(button_3, pH_menu) ){
 
             next_view();
             lcd_time = millis();

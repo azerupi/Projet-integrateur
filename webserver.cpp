@@ -1,6 +1,8 @@
 #include "webserver.h"
 
-Webserver::Webserver() : 
+#include "sensors.h"
+
+Webserver::Webserver() :
     server(80), // Create a server at port 80
     webserver_available(false) // Webserver is not available until begin() is called
 {
@@ -14,8 +16,8 @@ bool Webserver::begin(bool serial){
     if(serial){
         Serial.println("Configuring internet connection:");
     }
-    
-    
+
+
     // Try to get IP adress with DHCP protocol with Ethernet.begin(),
     // Returns 1 on success or 0 on failure
     if (!Ethernet.begin(mac)) {
@@ -28,7 +30,7 @@ bool Webserver::begin(bool serial){
     else{
         if(serial){
             // Get IP adress
-            Serial.print("IP is: "); 
+            Serial.print("IP is: ");
             Serial.println(Ethernet.localIP());
         }
         webserver_available = true;
@@ -56,7 +58,7 @@ bool Webserver::begin(bool serial){
             if(serial){
                 Serial.println("SUCCESS - SD card initialized.");
             }
-            
+
             if(serial){
                 // check for index.html file
                 if (!SD.exists("index.htm")) {
@@ -71,7 +73,7 @@ bool Webserver::begin(bool serial){
 
     }
 
-    
+
 
     return webserver_available;
 }
@@ -84,9 +86,9 @@ bool Webserver::begin(LiquidCrystal *lcd){
     lcd->print("Ethernet");
 
     // Try to get IP adress with DHCP protocol with Ethernet.begin(),
-    
+
     if (!Ethernet.begin(mac)) { // If connexion failed
-        
+
         lcd->clear();
         lcd->setCursor(0,0);
         lcd->print("Connexion Failed");
@@ -103,7 +105,7 @@ bool Webserver::begin(LiquidCrystal *lcd){
 
         webserver_available = false;
     }
-    else{ // If connexion successful 
+    else{ // If connexion successful
 
         lcd->clear();
         lcd->setCursor(0,0);
@@ -143,7 +145,7 @@ bool Webserver::begin(LiquidCrystal *lcd){
             lcd->print("SD Card Error !");
         }
         else{
-              
+
             if (!SD.exists("index.htm")) {
                 lcd->clear();
                 lcd->setCursor(0,0);
@@ -152,7 +154,7 @@ bool Webserver::begin(LiquidCrystal *lcd){
                 lcd->print("not found...");
                 // can't find index file
             }
-            
+
         }
     }
 
@@ -181,7 +183,7 @@ void Webserver::process_request(){
                     }
                 }
 
-                // every line of text received from the client ends with \r\n 
+                // every line of text received from the client ends with \r\n
                 else if (c != '\r') {
                     // a text character was received from client
                     currentLineIsBlank = false;
@@ -196,7 +198,7 @@ void Webserver::process_request(){
                         Serial.println(parsed_request);
 
                         serve_response(&client, parsed_request);
-                        
+
                         break;
                     }
                     else{
@@ -204,7 +206,7 @@ void Webserver::process_request(){
                         // starting new line with next character read
                         currentLineIsBlank = true;
                     }
-                    
+
                 }
 
             } // end if (client.available())
@@ -247,14 +249,14 @@ void Webserver::serve_response(EthernetClient *client, String request){
 
         char requestBuf[file.length()+1];
         file.toCharArray(requestBuf, file.length()+1);
-        
+
         if(SD.exists(requestBuf)){
             webFile = SD.open(requestBuf);
         }
         else{
             Serial.println("File does not exist on the SD card");
         }
-        
+
         // send web page
         if (webFile) {
             while(webFile.available()) {
@@ -279,7 +281,7 @@ void Webserver::process_api_request(EthernetClient *client, String request){
         client->print("\"ph\": " + String(get_sensor_values().pH) +",");
         client->print("\"humidity\": " + String(get_sensor_values().humidity) +"}");
     }
-    
+
 
 }
 
@@ -291,5 +293,5 @@ String Webserver::parse_request(String request){
 
     String processed = request.substring(startIndex, endIndex);
 
-    return processed; 
+    return processed;
 }

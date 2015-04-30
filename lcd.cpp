@@ -1,4 +1,6 @@
 #include "lcd.h"
+#include "time.h"
+#include "sensors.h"
 
 LiquidCrystal lcd(23, 25, 27, 29, 31, 33); // RS - ENABLE - D4 - D5 - D6
 lcd_view current_view = BLANK;
@@ -43,9 +45,8 @@ void show_view(lcd_view view){
             case TIME:
                 {
                     lcd.print("Time:");
-                    lcd.setCursor(7,1);
-                    String time_string = (get_time_now().hour < 10) ?  "0" : "" + get_time_now().hour + ':' + (get_time_now().minutes < 10) ? "0" : "" + get_time_now().minutes + ':' + (get_time_now().seconds < 10) ? "0" : "" + get_time_now().seconds;
-
+                    String time_string = ((get_time_now().hour < 10) ?  "0" : "") + String(get_time_now().hour) + ":" + ((get_time_now().minutes < 10) ? "0" : "") + String(get_time_now().minutes) + ":" + ((get_time_now().seconds < 10) ? "0" : "") + String(get_time_now().seconds);
+                    lcd.setCursor(16 - time_string.length(),1);
                     lcd.print(time_string);
                 }
                 break;
@@ -58,8 +59,18 @@ void show_view(lcd_view view){
 
             case LAST_PH_UPDATE:
                 lcd.print("Last pH measure:");
-                lcd.setCursor(7,1);
-                lcd.print( (get_sensor_values().last_ph_update.hour < 10) ?  "0" : "" + get_sensor_values().last_ph_update.hour + ':' + (get_sensor_values().last_ph_update.minutes < 10) ? "0" : "" + get_sensor_values().last_ph_update.minutes + ':' + (get_sensor_values().last_ph_update.seconds < 10) ? "0" : "" + get_sensor_values().last_ph_update.seconds );
+                {
+                    Time ph_time = get_sensor_values().last_ph_update;
+                    Time now = get_time_now();
+                    String time_string = ((now.hour - ph_time.hour > 0)? String(now.hour - ph_time.hour) + "h" : "") + ((now.minutes - ph_time.minutes > 0)? String(now.minutes - ph_time.minutes) + "m" : "") + ((now.seconds - ph_time.seconds > 0)? String(now.seconds - ph_time.seconds) + "s" : "");
+                    if(time_string.length() == 0){
+                        time_string = "0s";
+                    }
+                    time_string +=  + " ago";
+                    lcd.setCursor(16 - time_string.length(),1);
+                    lcd.print( time_string );
+                }
+                break;
 
             default:
                 break;

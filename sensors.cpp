@@ -1,7 +1,5 @@
 #include "sensors.h"
 
-
-
 SensorValues sensor_values = { NULL, NULL, NULL, NULL, NULL};
 DHT temperature_humidity_sensor(53, DHT22);
 
@@ -17,7 +15,11 @@ SensorValues get_sensor_values(){
 
 void measure_pH(){
 
-    // Code
+    get_lcd()->clear();
+    get_lcd()->setCursor(0,0);
+    get_lcd()->print("Measuring pH...");
+
+    delay(5000);
 
     // Update measure time
 
@@ -34,5 +36,33 @@ void measure_humidity(){
 }
 
 void measure_luminosity(){
+
+}
+
+
+void calibrate_pH(){
+
+    get_lcd()->clear();
+    get_lcd()->setCursor(0,0);
+    get_lcd()->print("Calibrating pH...");
+
+    delay(5000);
+
+}
+
+
+void pH_menu(){
+    LiquidCrystal *lcd = get_lcd();
+
+    lcd->clear();
+    lcd->setCursor(0,0);
+    lcd->print("(1) to Measure");
+    lcd->setCursor(0,1);
+    lcd->print("(2) to Calibrate");
+
+    while(!check_button(button_1, measure_pH) && !check_button(button_2, calibrate_pH)){
+        // Wait
+    }
+
 
 }

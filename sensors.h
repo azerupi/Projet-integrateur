@@ -3,6 +3,8 @@
 
 #include <DHT.h>
 #include "time.h"
+#include "lcd.h"
+#include "buttons.h"
 
 struct SensorValues{
     float luminosity;
@@ -29,6 +31,10 @@ void measure_pH();
 void measure_temperature();
 void measure_humidity();
 void measure_luminosity();
+
+void calibrate_pH();
+
+void pH_menu();
 
 
 #endif

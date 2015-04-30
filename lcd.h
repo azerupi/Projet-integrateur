@@ -3,11 +3,6 @@
 
 #include <LiquidCrystal.h>
 
-// To have access to saved sensor readings
-#include "time.h"
-#include "sensors.h"
-
-
 // http://arduino.cc/en/Tutorial/LiquidCrystal
 extern LiquidCrystal lcd;
 
