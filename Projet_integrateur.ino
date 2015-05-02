@@ -51,7 +51,6 @@ Webserver webserver = Webserver();
 // Timers
 long int sensor_time = 0;
 long int lcd_time = 0;
-long int heating_time = 0;
 
 
 
@@ -115,6 +114,9 @@ void loop() {
         measure_temperature();
         measure_humidity();
         sensor_time = millis();
+
+        // check also if heating is needed
+        check_temperature();
     }
 
 
@@ -123,14 +125,6 @@ void loop() {
     if(millis() - lcd_time > 3000){
         next_view();
         lcd_time = millis();
-    }
-
-
-    // check if temperature is equal to target_temperature
-
-    if(millis() - heating_time > 10000){
-        check_temperature();
-        heating_time = millis();
     }
 
 

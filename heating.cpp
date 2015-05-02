@@ -3,7 +3,7 @@
 char target_temperature = 25;
 bool heating_active = false;
 
-long int resistors_interrupt_time = 0;
+long int resistors_time = 0;
 
 void init_heating(){
     pinMode(heating, OUTPUT);
@@ -59,17 +59,22 @@ void lower_target_temperature(){
     check_temperature();
 }
 
+
 void check_temperature(){
 
-    if(get_sensor_values().temperature < target_temperature && !heating_active && millis() - resistors_interrupt_time > 30000){
-        digitalWrite(heating, HIGH);
-        heating_active = true;
-        resistors_interrupt_time = millis();
+    if(get_sensor_values().temperature < target_temperature){
+
+        if(millis() - resistors_time > 90000){
+            digitalWrite(heating, HIGH);
+            resistors_time = millis();
+        }
+        else if(millis() - resistors_time < 90000 && millis() - resistors_time > 60000){
+            digitalWrite(heating, LOW);
+        }
+
     }
-    else if((get_sensor_values().temperature > target_temperature || millis() - resistors_interrupt_time > 30000) && heating_active){
+    else{
         digitalWrite(heating, LOW);
-        heating_active = false;
-        resistors_interrupt_time = millis();
     }
 
 }

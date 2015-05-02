@@ -5,7 +5,7 @@
 #include "sensors.h"
 #include "buttons.h"
 
-const char heating = 0; // Has to change to the correct pin when we wire it
+const char heating = 37;
 
 extern char target_temperature;
 extern bool heating_active;
