@@ -7,7 +7,6 @@
 #include "buttons.h"
 
 struct SensorValues{
-    float luminosity;
     float pH;
     float temperature;
     float humidity;
@@ -16,8 +15,9 @@ struct SensorValues{
 
 // Sensor pins
 //*
-const char photoresistor = A0;   // Analog pin
-const char pH_sensor = A2;       // Analog pin
+const char pH_sensor = A15;       // Analog pin
+
+extern float offset;
 
 // http://playground.arduino.cc/Main/DHTLib
 extern DHT temperature_humidity_sensor; // Pin - DHT type
@@ -28,9 +28,9 @@ void init_sensors();
 SensorValues get_sensor_values();
 
 void measure_pH();
+float pH();
 void measure_temperature();
 void measure_humidity();
-void measure_luminosity();
 
 void calibrate_pH();
 

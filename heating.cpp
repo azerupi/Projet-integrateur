@@ -64,19 +64,15 @@ void check_temperature(){
 
     if(get_sensor_values().temperature < target_temperature){
 
-        if(millis() - resistors_time < 60*1000*3){
+        if(millis() - resistors_time < 180000){
             digitalWrite(heating, HIGH);
         }
-        else if(millis() - resistors_time > 60*1000*3 + 30000){
-            resistors_time = millis();
-        }
-        else{
+        else if(millis() - resistors_time < 210000){
             digitalWrite(heating, LOW);
         }
-
-
-
-
+        else{
+            resistors_time = millis();
+        }
     }
     else{
         digitalWrite(heating, LOW);
