@@ -6,7 +6,7 @@
 // http://arduino.cc/en/Tutorial/LiquidCrystal
 extern LiquidCrystal lcd;
 
-enum lcd_view { BLANK, TEMPERATURE, HUMIDITY, PH, LAST_PH_UPDATE, TIME };
+enum lcd_view { BLANK, TEMPERATURE, HUMIDITY, PH, LAST_PH_UPDATE, TIME, IP};
 extern lcd_view current_view;
 
 void init_lcd();

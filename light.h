@@ -14,7 +14,7 @@ enum Light_mode{
 };
 
 
-const char light = 39;
+const char light = 38;
 extern Light_mode light_mode;
 extern long int auto_time;
 

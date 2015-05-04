@@ -43,7 +43,7 @@
 
 // Ethernet
 
-Webserver webserver = Webserver();
+//Webserver webserver = Webserver();
 
 
 
@@ -80,7 +80,7 @@ void setup() {
     get_lcd()->clear();
     get_lcd()->setCursor(0,0);
     get_lcd()->print("Syncing time...");
-    if( true /*!init_time()*/ ){ // If time didn't sync from the internet, set it manually
+    if(true){//!init_time()){ // If time didn't sync from the internet, set it manually
         get_lcd()->clear();
         get_lcd()->setCursor(0,0);
         get_lcd()->print("Unable to sync");
@@ -133,8 +133,9 @@ void loop() {
     if( check_button(button_1, change_temperature_target) ||
         check_button(button_2, change_light_mode) ||
         check_button(button_3, pH_menu) ||
-        check_button(button_4, set_time_manually) ||
-        check_button(button_5, webserver_reconnect ) ){
+        check_button(button_4, set_time_manually)
+        // || check_button(button_5, webserver_reconnect )
+        ){
 
             next_view();
             lcd_time = millis();
@@ -166,7 +167,7 @@ void loop() {
 
 
 
-
+/*
 void webserver_reconnect(){
     webserver.begin(get_lcd());
-}
+}*/

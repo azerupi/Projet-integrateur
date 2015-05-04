@@ -1,6 +1,6 @@
 #include "sensors.h"
 
-SensorValues sensor_values = { NULL, NULL, NULL, NULL, NULL};
+SensorValues sensor_values = { 0, 0, 0, 0, 0};
 DHT temperature_humidity_sensor(53, DHT22);
 
 void init_sensors(){

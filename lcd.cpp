@@ -1,6 +1,7 @@
 #include "lcd.h"
 #include "time.h"
 #include "sensors.h"
+#include "webserver.h"
 
 LiquidCrystal lcd(23, 25, 27, 29, 31, 33); // RS - ENABLE - D4 - D5 - D6
 lcd_view current_view = BLANK;
@@ -72,6 +73,13 @@ void show_view(lcd_view view){
                 }
                 break;
 
+            case IP:
+                lcd.print("IP Adress:");
+                lcd.setCursor(0,1);
+                lcd.print(Webserver::get_ip());
+                break;
+
+
             default:
                 break;
     }
@@ -100,6 +108,13 @@ void next_view(){
         case PH:
             next_view = LAST_PH_UPDATE;
             break;
+
+        case LAST_PH_UPDATE:
+            if(Webserver::get_availability()){
+                next_view = IP;
+                break;
+            }
+
 
         // Don't include last view -> default will be selected and view will go back to first
 
