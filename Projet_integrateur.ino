@@ -43,7 +43,7 @@
 
 // Ethernet
 
-//Webserver webserver = Webserver();
+Webserver webserver = Webserver();
 
 
 
@@ -73,14 +73,14 @@ void setup() {
 
 
     // Init webserver
-    //webserver.begin(get_lcd());
+    webserver.begin(get_lcd());
 
     // Sync time with Internet
 
     get_lcd()->clear();
     get_lcd()->setCursor(0,0);
     get_lcd()->print("Syncing time...");
-    if(true){//!init_time()){ // If time didn't sync from the internet, set it manually
+    if(!init_time()){ // If time didn't sync from the internet, set it manually
         get_lcd()->clear();
         get_lcd()->setCursor(0,0);
         get_lcd()->print("Unable to sync");
@@ -134,18 +134,19 @@ void loop() {
         check_button(button_2, change_light_mode) ||
         check_button(button_3, pH_menu) ||
         check_button(button_4, set_time_manually)
-        // || check_button(button_5, webserver_reconnect )
+         || check_button(button_5, webserver_reconnect )
         ){
 
             next_view();
             lcd_time = millis();
     }
 
-    if( check_button(button_6, next_view)){
+    if( digitalRead(button_6) == LOW ){
         long int time_pressed = millis();
-        while(digitalRead(button_6) == HIGH && millis() - time_pressed < 500){
+        while(digitalRead(button_6) == LOW && millis() - time_pressed < 500){
 
         }
+        next_view();
         lcd_time = millis();
     }
 
@@ -155,19 +156,18 @@ void loop() {
 
 
     // Try to sync time with ntp server
-    //Serial.println("Sync passed in loop");
-    //sync_time();
+    sync_time();
 
 
     // If there is a web request, process it
-    //webserver.process_request();
+    webserver.process();
 
 }
 
 
 
 
-/*
+
 void webserver_reconnect(){
     webserver.begin(get_lcd());
-}*/
+}

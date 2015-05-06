@@ -1,17 +1,22 @@
 #include "webserver.h"
 
 #include "sensors.h"
+#include "heating.h"
+#include "time.h"
 
-Webserver::Webserver() :
-    server(80), // Create a server at port 80
-    webserver_available(false) // Webserver is not available until begin() is called
+
+bool Webserver::webserver_available = false;
+IPAddress Webserver::ip;
+
+Webserver::Webserver() : server(80) // Create a server at port 80
 {
-
+    api = false;
+    request = "";
 }
 
 bool Webserver::begin(bool serial){
 
-    // Start Ethenet configuration:
+    // Start Ethernet configuration:
 
     if(serial){
         Serial.println("Configuring internet connection:");
@@ -32,6 +37,7 @@ bool Webserver::begin(bool serial){
             // Get IP adress
             Serial.print("IP is: ");
             Serial.println(Ethernet.localIP());
+            ip = Ethernet.localIP();
         }
         webserver_available = true;
 
@@ -128,6 +134,7 @@ bool Webserver::begin(LiquidCrystal *lcd){
         lcd->print("IP Adress:");
         lcd->setCursor(0,1);
         lcd->print(Ethernet.localIP());
+        ip = Ethernet.localIP();
 
         webserver_available = true;
 
@@ -163,135 +170,242 @@ bool Webserver::begin(LiquidCrystal *lcd){
 }
 
 
-void Webserver::process_request(){
+void Webserver::process(){
 
-    EthernetClient client = server.available();  // try to get client
+    if(state != stateNoClient && !client){
+        state = stateDisconnecting;
+    }
 
-    String httpReq = "";
-    bool httpReqFirstLine = true;
+    switch(state){
 
-    if (client) {  // got client?
-        bool currentLineIsBlank = true;
-        while (client.connected()) {
-            if (client.available()) {   // client data available to read
-                char c = client.read(); // read 1 byte (character) from client
+    case stateNoClient:
+        // check if a new client is waiting
+        //Serial.println("No client");
+        client = server.available();
+        if (!client)
+            break;
 
-                if(httpReqFirstLine){
-                    httpReq += c;
-                    if(c == '\n'){
-                        httpReqFirstLine = false;
-                    }
-                }
+        state = stateReadingClient;
+        break;
 
-                // every line of text received from the client ends with \r\n
-                else if (c != '\r') {
-                    // a text character was received from client
-                    currentLineIsBlank = false;
-                }
+    case stateReadingClient:
+        readLineFromClient();
+        Serial.print("Request: ");
+        Serial.println(request);
+        state = stateExtractRequest;
+        break;
 
-                // last line of client request is blank and ends with \n
-                // respond to client only after last line received
-                if (c == '\n' && currentLineIsBlank) {
+    case stateExtractRequest:
+        extractRequest();
+        Serial.print("Request: ");
+        Serial.println(request);
+        state = stateProcessRequest;
+        break;
 
-                    if(currentLineIsBlank){
-                        String parsed_request = parse_request(httpReq);
-                        Serial.println(parsed_request);
+    case stateProcessRequest:
+        processRequest();
+        Serial.print("Request: ");
+        Serial.println(request);
+        state = stateSendHeader;
+        break;
 
-                        serve_response(&client, parsed_request);
+    case stateSendHeader:
+        sendHeader();
+        Serial.println("Send Header");
+        if(api)
+            state = stateProcessAPI;
+        else
+            state = stateOpenFile;
 
-                        break;
-                    }
-                    else{
-                        // last character on line of received text
-                        // starting new line with next character read
-                        currentLineIsBlank = true;
-                    }
+        break;
 
-                }
+    case stateOpenFile:
+        openFile();
+        if(!webfile){
+            Serial.println("File failed to open...");
+            state = stateDisconnecting;
+            break;
+        }
+        Serial.println("File Opened");
+        fileDone = false;
+        state = stateSendFile;
+        break;
 
-            } // end if (client.available())
-        } // end while (client.connected())
-        delay(1);      // give the web browser time to receive the data
-        client.stop(); // close the connection
-    } // end if (client)
+    case stateSendFile:
+        sendFile();
+        Serial.println("Send file...");
+        if(fileDone){
+            Serial.println("File done");
+            state = stateDisconnecting;
+        }
+        break;
+
+    case stateProcessAPI:
+        processAPI();
+        Serial.print("Process API");
+        state = stateDisconnecting;
+        break;
+
+    case stateDisconnecting:
+        client.stop();
+        Serial.println("Disconecting");
+        state = stateNoClient;
+        break;
+
+    default:
+        Serial.println("ERROR: Unknown State");
+        state = stateDisconnecting;
+        break;
+
+    }
 
 }
 
+void Webserver::readLineFromClient(){
+    int i = 0;
+    char c;
 
-void Webserver::serve_response(EthernetClient *client, String request){
-
-    // send a standard http response header
-    client->println("HTTP/1.1 200 OK");
-
-    String file = "";
-
-    if(request == "/"){
-        file = "index.htm";
-        client->println("Content-Type: text/html");
-        client->println("Connection: close");
-        client->println();
-    }
-    else if(request == "/style.css"){
-        file = "style.css";
-        client->println("Content-Type: text/css");
-        client->println("Connection: close");
-        client->println();
-    }
-    else if(request.substring(0,4) == "/api"){
-        Serial.println("API...");
-        process_api_request(client, request.substring(5));
-    }
-
-    if(file != ""){
-
-        // File
-        File webFile;
-
-        char requestBuf[file.length()+1];
-        file.toCharArray(requestBuf, file.length()+1);
-
-        if(SD.exists(requestBuf)){
-            webFile = SD.open(requestBuf);
+    while(client.connected() && client.available()){
+        c = client.read();
+        if(c == '\n' || c == '\r'){
+            break;
         }
-        else{
-            Serial.println("File does not exist on the SD card");
-        }
-
-        // send web page
-        if (webFile) {
-            while(webFile.available()) {
-                client->write(webFile.read()); // send web page to client
-            }
-            webFile.close();
-        }
+        request += c;
     }
 }
 
-
-void Webserver::process_api_request(EthernetClient *client, String request){
-
-    client->println("Content-Type: application/json");
-    client->println("Connection: close");
-    client->println();
-
-    Serial.println(request);
-
-    if(request == "sensors"){
-        client->print("{\"temp\": " + String(get_sensor_values().temperature) +",");
-        client->print("\"ph\": " + String(get_sensor_values().pH) +",");
-        client->print("\"humidity\": " + String(get_sensor_values().humidity) +"}");
-    }
-
-
-}
-
-
-String Webserver::parse_request(String request){
-
+void Webserver::extractRequest(){
     char startIndex = request.indexOf(' ') + 1;
     char endIndex = request.indexOf(' ', startIndex + 1);
 
-    String processed = request.substring(startIndex, endIndex);
+    request = request.substring(startIndex, endIndex);
+}
 
-    return processed;
+void Webserver::processRequest(){
+    api = false;
+
+    if(request == "/")
+        request = "index.htm";
+    else if(request == "/style.css")
+        request = "style.css";
+    else if(request.substring(0,4) == "/api"){
+        api = true;
+        request = request.substring(5);
+    }
+    else
+        request = "";
+
+}
+
+void Webserver::sendHeader(){
+    // send a standard http response header
+
+    if(api){
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: application/json");
+        client.println("Connection: close");
+        client.println();
+        return;
+    }
+    else if(request == "index.htm"){
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/html");
+        client.println("Connection: close");
+        client.println();
+        return;
+    }
+    else if(request == "style.css"){
+        client.println("HTTP/1.1 200 OK");
+        client.println("Content-Type: text/css");
+        client.println("Connection: close");
+        client.println();
+        return;
+    }
+    else{
+        client.println("HTTP/1.1 404 Not Found");
+        client.println("Content-Type: text/html");
+        client.println("Connection: close");
+        client.println();
+    }
+}
+
+void Webserver::openFile(){
+    Serial.print("Trying to open file: ");
+    Serial.println(request);
+    if(request == "")
+        return;
+
+    char requestBuf[request.length()+1];
+    request.toCharArray(requestBuf, request.length()+1);
+    Serial.println(requestBuf);
+    if(SD.exists(requestBuf)){
+        webfile = SD.open(requestBuf);
+    }
+
+}
+
+void Webserver::sendFile(){
+    if (webfile) {
+        int count = 0;
+        while(webfile.available()) {
+            client.write(webfile.read()); // send web page to client
+            if(count > 120)
+                return;
+        }
+        webfile.close();
+        fileDone = true;
+    }
+}
+
+void Webserver::processAPI(){
+    if(request == "sensors"){
+        Serial.println("API: Sensors");
+        Time ph_time = get_sensor_values().last_ph_update;
+        Time now = get_time_now();
+        client.print("{\"temp\": " + String(get_sensor_values().temperature) +",");
+        client.print("\"ph\": " + String(get_sensor_values().pH) +",");
+        client.print("\"ph_hour\": " + String(now.hour - ph_time.hour) +",");
+        client.print("\"ph_minutes\": " + String(now.minutes - ph_time.minutes) +",");
+        client.print("\"humidity\": " + String(get_sensor_values().humidity) +"}");
+
+        //
+    }
+    else if(request == "target-temp"){
+        Serial.println("API: Target Temperature");
+
+        client.print("{\"target_temp\": " + String((int)target_temperature)  +"}");
+    }
+    else if(request == "raise-temp"){
+        Serial.println("API: Raise Temperature");
+
+        raise_target_temperature();
+        client.print("{\"target_temp\": " + String((int)target_temperature)  +"}");
+    }
+    else if(request == "lower-temp"){
+        Serial.println("API: Lower Temperature");
+
+        lower_target_temperature();
+        client.print("{\"target_temp\": " + String((int)target_temperature)  +"}");
+    }
+    else if(request == "calibrate"){
+        Serial.println("API: Calibrate");
+
+        calibrate_pH();
+        client.print("/n");
+    }
+    else if(request == "ph"){
+        Serial.println("API: pH");
+
+        measure_pH();
+        client.print("{\"ph\": " +  String(get_sensor_values().pH)  +"}");
+    }
+}
+
+
+IPAddress Webserver::get_ip(){
+    return ip;
+}
+
+bool Webserver::get_availability(){
+    return webserver_available;
 }
