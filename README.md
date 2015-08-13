@@ -1,3 +1,7 @@
+This code is not maintained, it's on Github only for educational purposes. The interesting part of this project is the **Webserver** running on the Arduino. The webserver had to run without blocking the main loop, in order to keep buttons and lcd responsive to user input. Therefore every request is processed in multiple passes to prevent blocking the loop while processing the http requests.
+
+Feel free to do whatever you want whit this code. License: [MIT](LICENSE)
+
 # Projet integrateur 2015 - ECAM
 
 Ceci est le code Arduino pour notre projet 2015 à l'Ecam 
